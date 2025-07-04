@@ -50,12 +50,15 @@
             <th>Image Usage</th>
             <th>Total Storage</th>
             <th>Total Referrals</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(user, index) in users" :key="index">
-            <td>{{ user.name }}</td>
+            <td>
+              <router-link :to="`/users/${index + 1}`" class="username-link">
+                {{ user.name || user.email }}
+              </router-link>
+            </td>
             <td>{{ user.email }}</td>
             <td>{{ user.registerTime }}</td>
             <td>$ {{ user.currentCredits }}</td>
@@ -67,15 +70,6 @@
             <td>{{ user.imageUsage }}</td>
             <td>{{ user.totalStorage }}</td>
             <td>{{ user.totalReferrals }}</td>
-            <td>
-              <router-link :to="`/users/${index + 1}`" class="view-details-btn">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" fill="#3490dc"/>
-                  <path d="M10 4C5.5 4 2 8 2 10c0 2 3.5 6 8 6s8-4 8-6c0-2-3.5-6-8-6z" stroke="#3490dc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                View
-              </router-link>
-            </td>
           </tr>
         </tbody>
       </table>
@@ -310,4 +304,13 @@ export default {
 .view-details-btn:hover {
   background-color: #e6f2fb;
 }
-</style> 
+
+.username-link {
+  color: #3490dc;
+  text-decoration: none;
+  font-weight: 500;
+}
+.username-link:hover {
+  text-decoration: underline;
+}
+</style>

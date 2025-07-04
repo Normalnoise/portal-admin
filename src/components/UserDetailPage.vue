@@ -2,7 +2,7 @@
   <div class="main-content">
     <!-- 导航栏 -->
     <div class="navbar">
-      <h1>User Details: {{ user.name || user.email }}</h1>
+      <h1>User Details</h1>
       <div class="admin-dropdown">
         ADMIN
         <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,6 +44,19 @@
             <div class="info-item">
               <div class="info-label">Role</div>
               <div class="info-value">{{ user.role || 'Standard' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Tier</div>
+              <div class="info-value">
+                <select v-model="user.tier" class="dropdown tier-dropdown">
+                  <option value="">Select Tier</option>
+                  <option>Engineer Tier 1</option>
+                  <option>Engineer Tier 2</option>
+                  <option>Engineer Tier 3</option>
+                  <option>Expert Tier 1</option>
+                  <option>Expert Tier 2</option>
+                </select>
+              </div>
             </div>
             <div class="info-item">
               <div class="info-label">Organization</div>
@@ -270,7 +283,12 @@ export default {
   computed: {
     user() {
       const userId = parseInt(this.id) - 1;
-      return this.allUsers[userId] || {};
+      const userObj = this.allUsers[userId] || {};
+      // 确保 tier 属性存在，如果不存在则设为空字符串
+      if (!userObj.tier) {
+        userObj.tier = '';
+      }
+      return userObj;
     }
   }
 }
@@ -286,4 +304,9 @@ export default {
 .header-left {
   margin-right: auto;
 }
-</style> 
+
+.tier-dropdown {
+  width: 180px;
+  min-width: 180px;
+}
+</style>
