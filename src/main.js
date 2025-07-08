@@ -20,7 +20,24 @@ const routes = [
 // 创建路由实例
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  // 添加滚动行为配置
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      // 如果有锚点，滚动到锚点位置
+      return { 
+        el: to.hash,
+        top: 0,
+        behavior: 'smooth'
+      }
+    } else if (savedPosition) {
+      // 如果有保存的位置（如浏览器前进/后退），使用保存的位置
+      return savedPosition
+    } else {
+      // 默认滚动到顶部
+      return { top: 0 }
+    }
+  }
 })
 
 // 创建Vue应用实例并使用路由

@@ -1,5 +1,5 @@
 <template>
-  <div class="main-content">
+  <div class="main-content" id="user-usage-details">
     <!-- Navigation Bar -->
     <div class="navbar">
       <h1>
@@ -228,6 +228,9 @@ export default {
     
     // Initialize charts on component mount
     onMounted(() => {
+      // 确保页面滚动到顶部
+      window.scrollTo(0, 0);
+      
       // Daily Active Users Chart
       const activeUsersCtx = activeUsersChart.value.getContext('2d');
       new Chart(activeUsersCtx, {

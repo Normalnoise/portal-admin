@@ -249,7 +249,7 @@
         </tbody>
       </table>
       <div class="view-more">
-        <router-link to="/user-usage-details" class="view-more-button">View More</router-link>
+        <router-link to="/user-usage-details#user-usage-details" class="view-more-button">View More</router-link>
       </div>
     </div>
     
