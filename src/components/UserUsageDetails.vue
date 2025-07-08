@@ -7,226 +7,256 @@
         <span class="breadcrumb-separator"> &gt; </span>
         <span class="breadcrumb-current">User Usage Details</span>
       </h1>
-      <div class="admin-dropdown">
-        ADMIN
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="m6 8 4 4 4-4" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-        </svg>
-      </div>
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          ADMIN
+          <el-icon class="el-icon--right">
+            <arrow-down />
+          </el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item>Profile</el-dropdown-item>
+            <el-dropdown-item>Settings</el-dropdown-item>
+            <el-dropdown-item divided>Sign Out</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
     
     <!-- User Stats Summary -->
-    <div class="metrics-section">
-      <div class="metric-card">
-        <div class="metric-title">Total Users</div>
-        <div class="metric-value">152</div>
-        <div class="metric-change positive">↑5%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">Active Users</div>
-        <div class="metric-value">87</div>
-        <div class="metric-change positive">↑8%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">Total Requests</div>
-        <div class="metric-value">23,541</div>
-        <div class="metric-change positive">↑15%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">Avg Daily Requests</div>
-        <div class="metric-value">789</div>
-        <div class="metric-change positive">↑12%</div>
-      </div>
-    </div>
+    <el-row :gutter="20" class="metrics-row">
+      <el-col :xs="24" :sm="12" :md="6">
+        <el-card class="metric-card" shadow="hover">
+          <div class="metric-header">
+            <span class="metric-title">Total Users</span>
+          </div>
+          <div class="metric-value">152</div>
+          <div class="metric-change positive">
+            <el-icon><top /></el-icon>
+            5%
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :md="6">
+        <el-card class="metric-card" shadow="hover">
+          <div class="metric-header">
+            <span class="metric-title">Active Users</span>
+          </div>
+          <div class="metric-value">87</div>
+          <div class="metric-change positive">
+            <el-icon><top /></el-icon>
+            8%
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :md="6">
+        <el-card class="metric-card" shadow="hover">
+          <div class="metric-header">
+            <span class="metric-title">Total Requests</span>
+          </div>
+          <div class="metric-value">23,541</div>
+          <div class="metric-change positive">
+            <el-icon><top /></el-icon>
+            15%
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :md="6">
+        <el-card class="metric-card" shadow="hover">
+          <div class="metric-header">
+            <span class="metric-title">Avg Daily Requests</span>
+          </div>
+          <div class="metric-value">789</div>
+          <div class="metric-change positive">
+            <el-icon><top /></el-icon>
+            12%
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
     
     <!-- Filter Area -->
-    <div class="filter-section">
+    <el-card class="filter-card" shadow="hover">
       <div class="filter-row">
-        <div class="filter-group">
+        <div class="filter-item">
           <span class="filter-label">User:</span>
-          <div class="user-filter">
-            <input 
-              type="text" 
-              class="user-input" 
-              placeholder="Enter user ID or email" 
-              v-model="userFilter"
+          <el-select 
+            v-model="userFilter" 
+            filterable 
+            clearable 
+            placeholder="Enter user ID or email"
+            style="width: 200px"
+          >
+            <el-option 
+              v-for="user in sampleData" 
+              :key="user.email" 
+              :label="user.email" 
+              :value="user.email"
             />
-            <div class="dropdown-icon" @click="toggleUserDropdown">
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="m6 8 4 4 4-4" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-              </svg>
-            </div>
-            <div class="user-dropdown" v-if="showUserDropdown">
-              <div class="dropdown-item" @click="selectUser('')">All Users</div>
-              <div 
-                class="dropdown-item" 
-                v-for="user in uniqueUsers" 
-                :key="user.email" 
-                @click="selectUser(user.email)"
-              >
-                {{ user.email }}
-              </div>
-            </div>
-          </div>
+          </el-select>
         </div>
         
-        <div class="filter-group">
+        <div class="filter-item">
           <span class="filter-label">Model:</span>
-          <select class="dropdown">
-            <option value="">All Models</option>
-            <option v-for="model in modelOptions" :key="model" :value="model">{{ model }}</option>
-          </select>
+          <el-select 
+            v-model="modelFilter" 
+            placeholder="All Models" 
+            clearable
+            style="width: 150px"
+          >
+            <el-option label="All Models" value=""></el-option>
+            <el-option 
+              v-for="model in modelOptions" 
+              :key="model" 
+              :label="model" 
+              :value="model"
+            />
+          </el-select>
         </div>
         
-        <div class="filter-group">
+        <div class="filter-item">
           <span class="filter-label">Date Range:</span>
-          <div class="date-input-wrapper">
-            <input type="date" class="date-input" v-model="startDate">
-            <svg class="date-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 5V3m8 2V3m-9 4h10M5 7v8a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-            </svg>
-          </div>
-          <span class="to-label">to</span>
-          <div class="date-input-wrapper">
-            <input type="date" class="date-input" v-model="endDate">
-            <svg class="date-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 5V3m8 2V3m-9 4h10M5 7v8a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-            </svg>
-          </div>
+          <el-date-picker
+            v-model="dateRange"
+            type="daterange"
+            range-separator="to"
+            start-placeholder="Start date"
+            end-placeholder="End date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            style="width: 290px"
+          />
         </div>
         
         <div class="filter-buttons">
-          <button class="search-button">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-              <path d="M8.5 3a5.5 5.5 0 0 1 4.383 8.823l4.147 4.147a.75.75 0 0 1-1.06 1.06l-4.147-4.147A5.5 5.5 0 1 1 8.5 3Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="white"/>
-            </svg>
+          <el-button type="primary" @click="handleSearch">
+            <el-icon><search /></el-icon>
             Search
-          </button>
-          <button class="reset-button">Reset</button>
+          </el-button>
+          <el-button @click="handleReset" plain>Reset</el-button>
         </div>
       </div>
-    </div>
+    </el-card>
     
     <!-- User Usage Table -->
-    <div class="user-table-wrapper">
-      <table class="user-table">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Total Requests</th>
-            <th>Total Tokens</th>
-            <th>Most Used Models</th>
-            <th>Last Activity</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(user, index) in userList" :key="index">
-            <td>{{ user.email }}</td>
-            <td>{{ user.requests }}</td>
-            <td>{{ user.tokens }}</td>
-            <td>{{ user.models }}</td>
-            <td>{{ user.lastActivity }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="pagination">
-        <div class="pagination-info">
-          Showing 1-15 / Total 152
+    <el-card class="table-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">User Usage Details</span>
+          <span class="data-info">Showing {{ sampleData.length }} users</span>
         </div>
-        <div class="pagination-buttons">
-          <button class="pagination-button" disabled>
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4l-6 6 6 6" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          
-          <button class="pagination-button active">1</button>
-          <button class="pagination-button">2</button>
-          <button class="pagination-button">3</button>
-          <span>...</span>
-          <button class="pagination-button">10</button>
-          
-          <button class="pagination-button">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 4l6 6-6 6" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          
-          <select class="dropdown" style="margin-left: 10px; width: 100px;">
-            <option value="15">15/page</option>
-            <option value="30">30/page</option>
-            <option value="50">50/page</option>
-          </select>
-        </div>
+      </template>
+      
+      <el-table 
+        :data="sampleData" 
+        style="width: 100%" 
+        stripe 
+        :border="true"
+        highlight-current-row
+      >
+        <el-table-column prop="email" label="User" width="180" />
+        <el-table-column prop="successRequests" label="Success Requests">
+          <template #default="{ row }">
+            <span class="success-text">{{ row.successRequests }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="failedRequests" label="Failed Requests">
+          <template #default="{ row }">
+            <span class="failed-text">{{ row.failedRequests }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tokens" label="Tokens" />
+        <el-table-column prop="avgResponse" label="Avg Response" />
+        <el-table-column prop="models" label="Models" />
+      </el-table>
+      
+      <div class="pagination-wrapper">
+        <el-pagination
+          v-model:currentPage="currentPage"
+          v-model:pageSize="pageSize"
+          :page-sizes="[5, 10, 15, 30, 50]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="sampleData.length"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
-    </div>
+    </el-card>
     
     <!-- User Activity Charts -->
-    <div class="charts-container">
-      <div class="chart-row">
-        <div class="chart-column">
-          <h3 class="chart-title">Daily Active Users</h3>
-          <div class="chart-container" ref="activeUsersChart">
-            <!-- Chart will be rendered here -->
-          </div>
-        </div>
-        
-        <div class="chart-column">
-          <h3 class="chart-title">Top 5 Users by Token Usage</h3>
-          <div class="chart-container" ref="topUsersChart">
-            <!-- Chart will be rendered here -->
-          </div>
-        </div>
-      </div>
+    <el-row :gutter="20" class="chart-row">
+      <el-col :span="12">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">Daily Active Users</span>
+            </div>
+          </template>
+          <div class="chart-container" ref="activeUsersChart"></div>
+        </el-card>
+      </el-col>
       
-      <div class="chart-row">
-        <div class="chart-column">
-          <h3 class="chart-title">Model Popularity</h3>
-          <div class="chart-container" ref="modelPopularityChart">
-            <!-- Chart will be rendered here -->
-          </div>
-        </div>
-        
-        <div class="chart-column">
-          <h3 class="chart-title">Hourly Usage Pattern</h3>
-          <div class="chart-container" ref="hourlyUsageChart">
-            <!-- Chart will be rendered here -->
-          </div>
-        </div>
-      </div>
-    </div>
+      <el-col :span="12">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">Top 5 Users by Token Usage</span>
+            </div>
+          </template>
+          <div class="chart-container" ref="topUsersChart"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+    
+    <el-row :gutter="20" class="chart-row">
+      <el-col :span="12">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">Model Popularity</span>
+            </div>
+          </template>
+          <div class="chart-container" ref="modelPopularityChart"></div>
+        </el-card>
+      </el-col>
+      
+      <el-col :span="12">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">Hourly Usage Pattern</span>
+            </div>
+          </template>
+          <div class="chart-container" ref="hourlyUsageChart"></div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
-import Chart from 'chart.js/auto';
+import { onMounted, ref } from 'vue'
+import Chart from 'chart.js/auto'
 
 export default {
   name: 'UserUsageDetails',
   setup() {
-    const startDate = ref('2023-01-01');
-    const endDate = ref('2023-01-31');
-    const userFilter = ref('');
-    const showUserDropdown = ref(false);
+    // 基础状态
+    const userFilter = ref('')
+    const modelFilter = ref('')
+    const dateRange = ref(['2023-01-01', '2023-01-31'])
+    const currentPage = ref(1)
+    const pageSize = ref(10)
     
-    // User dropdown functions
-    const toggleUserDropdown = () => {
-      showUserDropdown.value = !showUserDropdown.value;
-    };
+    // 图表引用
+    const activeUsersChart = ref(null)
+    const topUsersChart = ref(null)
+    const modelPopularityChart = ref(null)
+    const hourlyUsageChart = ref(null)
     
-    const selectUser = (email) => {
-      userFilter.value = email;
-      showUserDropdown.value = false;
-    };
-    
-    // Chart references
-    const activeUsersChart = ref(null);
-    const topUsersChart = ref(null);
-    const modelPopularityChart = ref(null);
-    const hourlyUsageChart = ref(null);
-    
-    // Sample data
+    // 模型选项
     const modelOptions = [
       'Llama-3',
       'Mistral',
@@ -235,54 +265,63 @@ export default {
       'DALL-E',
       'Stable Diffusion',
       'Midjourney'
-    ];
+    ]
     
-    const uniqueUsers = [
-      { email: 'user1@x.com' },
-      { email: 'user2@x.com' },
-      { email: 'user3@x.com' },
-      { email: 'user4@x.com' },
-      { email: 'user5@x.com' },
-      { email: 'user6@x.com' },
-      { email: 'user7@x.com' },
-      { email: 'user8@x.com' },
-      { email: 'user9@x.com' },
-      { email: 'user10@x.com' }
-    ];
+    // 示例数据 - 使用更有代表性的数据
+    const sampleData = [
+      { email: 'john.doe@example.com', successRequests: '1,234', failedRequests: '12', tokens: '150K', avgResponse: '220ms', models: 'GPT-4, Claude', lastActivity: '2023-01-30' },
+      { email: 'alice.smith@example.com', successRequests: '987', failedRequests: '8', tokens: '120K', avgResponse: '185ms', models: 'Llama-3', lastActivity: '2023-01-30' },
+      { email: 'bob.wilson@example.com', successRequests: '756', failedRequests: '15', tokens: '98K', avgResponse: '245ms', models: 'Mistral', lastActivity: '2023-01-29' },
+      { email: 'emma.brown@example.com', successRequests: '543', failedRequests: '5', tokens: '76K', avgResponse: '195ms', models: 'Claude', lastActivity: '2023-01-28' },
+      { email: 'james.miller@example.com', successRequests: '432', failedRequests: '7', tokens: '65K', avgResponse: '210ms', models: 'GPT-4', lastActivity: '2023-01-27' },
+      { email: 'sophia.jones@example.com', successRequests: '398', failedRequests: '9', tokens: '58K', avgResponse: '230ms', models: 'Llama-3', lastActivity: '2023-01-30' },
+      { email: 'william.davis@example.com', successRequests: '345', failedRequests: '6', tokens: '52K', avgResponse: '200ms', models: 'Mistral', lastActivity: '2023-01-29' },
+      { email: 'olivia.taylor@example.com', successRequests: '312', failedRequests: '4', tokens: '45K', avgResponse: '175ms', models: 'Claude', lastActivity: '2023-01-28' },
+      { email: 'noah.thomas@example.com', successRequests: '287', failedRequests: '10', tokens: '38K', avgResponse: '225ms', models: 'DALL-E', lastActivity: '2023-01-27' },
+      { email: 'ava.roberts@example.com', successRequests: '256', failedRequests: '3', tokens: '32K', avgResponse: '190ms', models: 'GPT-4', lastActivity: '2023-01-30' }
+    ]
     
-    const userList = [
-      { email: 'user1@x.com', requests: '534', tokens: '120K', models: 'Llama-3, Claude', lastActivity: '2023-01-30' },
-      { email: 'user2@x.com', requests: '423', tokens: '98K', models: 'Mistral, GPT-4', lastActivity: '2023-01-30' },
-      { email: 'user3@x.com', requests: '287', tokens: '76K', models: 'Llama-3', lastActivity: '2023-01-29' },
-      { email: 'user4@x.com', requests: '198', tokens: '54K', models: 'Claude, DALL-E', lastActivity: '2023-01-28' },
-      { email: 'user5@x.com', requests: '156', tokens: '42K', models: 'GPT-4, Mistral', lastActivity: '2023-01-30' },
-      { email: 'user6@x.com', requests: '143', tokens: '38K', models: 'GPT-4', lastActivity: '2023-01-29' },
-      { email: 'user7@x.com', requests: '128', tokens: '31K', models: 'Llama-3', lastActivity: '2023-01-27' },
-      { email: 'user8@x.com', requests: '117', tokens: '28K', models: 'Mistral, DALL-E', lastActivity: '2023-01-29' },
-      { email: 'user9@x.com', requests: '95', tokens: '22K', models: 'Claude', lastActivity: '2023-01-28' },
-      { email: 'user10@x.com', requests: '82', tokens: '19K', models: 'GPT-4, Llama-3', lastActivity: '2023-01-26' },
-      { email: 'user11@x.com', requests: '78', tokens: '18K', models: 'Mistral', lastActivity: '2023-01-30' },
-      { email: 'user12@x.com', requests: '65', tokens: '15K', models: 'Llama-3', lastActivity: '2023-01-29' },
-      { email: 'user13@x.com', requests: '59', tokens: '14K', models: 'DALL-E', lastActivity: '2023-01-28' },
-      { email: 'user14@x.com', requests: '54', tokens: '13K', models: 'Mistral', lastActivity: '2023-01-27' },
-      { email: 'user15@x.com', requests: '48', tokens: '11K', models: 'GPT-4', lastActivity: '2023-01-29' }
-    ];
+    // 方法
+    const handleSearch = () => {
+      console.log('Search with:', {
+        user: userFilter.value,
+        model: modelFilter.value,
+        dateRange: dateRange.value
+      })
+      // 重置到第一页
+      currentPage.value = 1
+    }
     
-    // Initialize charts on component mount
+    const handleReset = () => {
+      userFilter.value = ''
+      modelFilter.value = ''
+      dateRange.value = ['2023-01-01', '2023-01-31']
+      // 重置到第一页
+      currentPage.value = 1
+    }
+    
+    const handleSizeChange = (val) => {
+      pageSize.value = val
+      currentPage.value = 1
+    }
+    
+    const handleCurrentChange = (val) => {
+      currentPage.value = val
+    }
+    
+    // 在组件挂载时初始化图表
     onMounted(() => {
       // 确保页面滚动到顶部
-      window.scrollTo(0, 0);
+      window.scrollTo(0, 0)
       
-      // 添加点击外部关闭下拉菜单的事件监听
-      document.addEventListener('click', (event) => {
-        const userFilterElement = document.querySelector('.user-filter');
-        if (userFilterElement && !userFilterElement.contains(event.target)) {
-          showUserDropdown.value = false;
-        }
-      });
-      
-      // Daily Active Users Chart
-      const activeUsersCtx = activeUsersChart.value.getContext('2d');
+      // 初始化所有图表
+      initCharts()
+    })
+    
+    // 初始化图表的方法
+    const initCharts = () => {
+      // 每日活跃用户图表
+      const activeUsersCtx = activeUsersChart.value.getContext('2d')
       new Chart(activeUsersCtx, {
         type: 'line',
         data: {
@@ -293,12 +332,14 @@ export default {
               data: [65, 75, 85, 95, 90, 85, 95],
               borderColor: '#4C6EF5',
               backgroundColor: 'rgba(76, 110, 245, 0.1)',
-              tension: 0.3
+              tension: 0.3,
+              fill: true
             }
           ]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               title: {
@@ -309,18 +350,18 @@ export default {
             }
           }
         }
-      });
+      })
       
-      // Top 5 Users by Token Usage Chart
-      const topUsersCtx = topUsersChart.value.getContext('2d');
+      // 前5名用户按令牌使用量排序的图表
+      const topUsersCtx = topUsersChart.value.getContext('2d')
       new Chart(topUsersCtx, {
         type: 'bar',
         data: {
-          labels: ['user1@x.com', 'user2@x.com', 'user3@x.com', 'user4@x.com', 'user5@x.com'],
+          labels: sampleData.slice(0, 5).map(user => user.email),
           datasets: [
             {
               label: 'Token Usage (K)',
-              data: [120, 98, 76, 54, 42],
+              data: sampleData.slice(0, 5).map(user => parseInt(user.tokens.replace('K', ''))),
               backgroundColor: '#4C6EF5'
             }
           ]
@@ -328,6 +369,7 @@ export default {
         options: {
           indexAxis: 'y',
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
             x: {
               title: {
@@ -342,10 +384,10 @@ export default {
             }
           }
         }
-      });
+      })
       
-      // Model Popularity Chart
-      const modelPopularityCtx = modelPopularityChart.value.getContext('2d');
+      // 模型流行度图表
+      const modelPopularityCtx = modelPopularityChart.value.getContext('2d')
       new Chart(modelPopularityCtx, {
         type: 'bar',
         data: {
@@ -368,6 +410,7 @@ export default {
         options: {
           indexAxis: 'y',
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               display: false
@@ -382,10 +425,10 @@ export default {
             }
           }
         }
-      });
+      })
       
-      // Hourly Usage Pattern Chart
-      const hourlyUsageCtx = hourlyUsageChart.value.getContext('2d');
+      // 每小时使用模式图表
+      const hourlyUsageCtx = hourlyUsageChart.value.getContext('2d')
       new Chart(hourlyUsageCtx, {
         type: 'bar',
         data: {
@@ -400,6 +443,7 @@ export default {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               display: false
@@ -421,34 +465,44 @@ export default {
             }
           }
         }
-      });
-    });
+      })
+    }
     
     return {
-      startDate,
-      endDate,
+      userFilter,
+      modelFilter,
+      dateRange,
+      currentPage,
+      pageSize,
+      sampleData,
       modelOptions,
-      uniqueUsers,
-      userList,
       activeUsersChart,
       topUsersChart,
       modelPopularityChart,
       hourlyUsageChart,
-      userFilter,
-      showUserDropdown,
-      toggleUserDropdown,
-      selectUser
-    };
+      handleSearch,
+      handleReset,
+      handleSizeChange,
+      handleCurrentChange
+    }
   }
-};
+}
 </script>
 
 <style scoped>
-.filter-section {
+.main-content {
   padding: 20px;
-  background-color: white;
-  border-bottom: 1px solid #eee;
+  background-color: #f5f7fa;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+  height: 70px;
+  border-bottom: 1px solid #ebeef5;
+  padding: 0 0 20px 0;
 }
 
 .navbar h1 {
@@ -475,292 +529,157 @@ export default {
   color: #1e293b;
 }
 
-.filter-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 15px;
-}
-
-.filter-group {
-  display: flex;
-  align-items: center;
-  margin-right: 0;
-  margin-bottom: 0;
-}
-
-.filter-label {
-  font-weight: 500;
-  margin-right: 12px;
-  color: #333;
-  font-size: 16px;
-}
-
-.to-label {
-  margin: 0 10px;
-  font-size: 16px;
-}
-
-.date-input {
-  padding: 10px 35px 10px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 150px;
-  font-size: 14px;
-  appearance: none;
-  background-color: white;
-}
-
-.date-input-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.date-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.dropdown {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  min-width: 150px;
-  font-size: 14px;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
-  background-position: right 10px center;
-  background-repeat: no-repeat;
-  background-size: 16px 16px;
-  padding-right: 35px;
-}
-
-.filter-buttons {
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-}
-
-.search-button {
-  padding: 10px 20px;
-  background-color: #3490dc;
-  color: white;
-  border: none;
-  border-radius: 4px;
+.el-dropdown-link {
   cursor: pointer;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.search-button:hover {
-  background-color: #2779bd;
-}
-
-.reset-button {
-  padding: 10px 20px;
-  background-color: #f1f5f9;
-  color: #333;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.reset-button:hover {
-  background-color: #e2e8f0;
-}
-
-.metrics-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  background-color: #f9fafb;
+.metrics-row {
+  margin-bottom: 20px;
 }
 
 .metric-card {
-  background-color: #ffffff;
+  height: 140px;
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .metric-title {
   font-size: 16px;
-  color: #64748b;
-  margin-bottom: 10px;
+  font-weight: 500;
+  margin-right: 5px;
+  color: #606266;
 }
 
 .metric-value {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 8px;
+  margin: 10px 0;
+  color: #303133;
 }
 
 .metric-change {
-  font-size: 16px;
-  font-weight: 500;
-  color: #10b981;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.metric-change.positive {
-  color: #10b981;
+.positive {
+  color: #34D399;
 }
 
-.metric-change.negative {
-  color: #ef4444;
+.negative {
+  color: #F56C6C;
 }
 
-.user-table-wrapper {
-  padding: 20px;
-  background-color: white;
-  margin: 20px;
+.filter-card {
+  margin-bottom: 20px;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 8px 0;
 }
 
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
+.filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 20px;
 }
 
-.user-table th {
-  background-color: #f8fafc;
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #e2e8f0;
+.filter-item {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 14px;
+  color: #606266;
   font-weight: 500;
-  color: #64748b;
 }
 
-.user-table td {
-  padding: 12px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #334155;
+.filter-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
 }
 
-.pagination {
+.table-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.data-info {
+  font-size: 14px;
+  color: #909399;
+}
+
+.pagination-wrapper {
   margin-top: 20px;
-}
-
-.pagination-info {
-  color: #64748b;
-}
-
-.pagination-buttons {
   display: flex;
-  align-items: center;
-}
-
-.pagination-button {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
-  background-color: white;
-  margin: 0 2px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.pagination-button.active {
-  background-color: #3490dc;
-  color: white;
-  border-color: #3490dc;
-}
-
-.pagination-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.charts-container {
-  padding: 0 20px 20px;
 }
 
 .chart-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
   margin-bottom: 20px;
 }
 
-.chart-column {
-  background-color: white;
-  padding: 20px;
+.chart-card {
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.chart-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 15px;
 }
 
 .chart-container {
   height: 300px;
-  position: relative;
+  margin-bottom: 10px;
+  padding: 10px;
 }
 
-.user-filter {
-  position: relative;
-  min-width: 200px;
+.success-text {
+  color: #67C23A;
+  font-weight: 500;
 }
 
-.user-input {
-  padding: 10px 35px 10px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  font-size: 14px;
+.failed-text {
+  color: #F56C6C;
+  font-weight: 500;
 }
 
-.dropdown-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
+:deep(.el-table th) {
+  background-color: #f5f7fa;
+  font-weight: 600;
+  color: #606266;
 }
 
-.user-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 2px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+  background-color: #409EFF;
 }
 
-.dropdown-item {
-  padding: 10px 12px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.dropdown-item:hover {
-  background-color: #f3f4f6;
+:deep(.el-card__body) {
+  padding: 15px 20px;
 }
 </style> 

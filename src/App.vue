@@ -1,10 +1,10 @@
 <template>
-  <div class="app">
+  <el-container class="app">
     <Sidebar />
-    <div class="content-area">
+    <el-container direction="vertical" class="content-area">
       <router-view :key="$route.fullPath"></router-view>
-    </div>
-  </div>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
@@ -20,7 +20,6 @@ export default {
 
 <style>
 .app {
-  display: flex;
   min-height: 100vh;
 }
 

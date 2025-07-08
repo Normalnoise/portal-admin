@@ -3,336 +3,359 @@
     <!-- Navigation Bar -->
     <div class="navbar">
       <h1>Dashboard</h1>
-      <div class="admin-dropdown">
-        ADMIN
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="m6 8 4 4 4-4" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-        </svg>
-      </div>
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          ADMIN
+          <el-icon class="el-icon--right">
+            <arrow-down />
+          </el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item>个人信息</el-dropdown-item>
+            <el-dropdown-item>设置</el-dropdown-item>
+            <el-dropdown-item divided>退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
     
     <!-- Filter Area -->
-    <div class="filter-section">
+    <el-card class="filter-card" shadow="hover">
       <div class="filter-row">
-        <div class="filter-group">
+        <div class="filter-item">
           <span class="filter-label">User:</span>
-          <div class="user-filter">
-            <input 
-              type="text" 
-              class="user-input" 
-              placeholder="Enter user ID or email" 
-              v-model="userFilter"
+          <el-select 
+            v-model="userFilter" 
+            filterable 
+            clearable 
+            placeholder="Enter user ID or email"
+            style="width: 200px"
+          >
+            <el-option 
+              v-for="user in uniqueUsers" 
+              :key="user.email" 
+              :label="user.email" 
+              :value="user.email"
             />
-            <div class="dropdown-icon" @click="toggleUserDropdown">
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="m6 8 4 4 4-4" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-              </svg>
-            </div>
-            <div class="user-dropdown" v-if="showUserDropdown">
-              <div class="dropdown-item" @click="selectUser('')">All Users</div>
-              <div 
-                class="dropdown-item" 
-                v-for="user in uniqueUsers" 
-                :key="user.email" 
-                @click="selectUser(user.email)"
-              >
-                {{ user.email }}
-              </div>
-            </div>
-          </div>
+          </el-select>
         </div>
         
-        <div class="filter-group">
+        <div class="filter-item">
           <span class="filter-label">Model:</span>
-          <select class="dropdown dropdown-sm">
-            <option value="">All Models</option>
-            <option v-for="model in modelOptions" :key="model" :value="model">{{ model }}</option>
-          </select>
+          <el-select 
+            v-model="modelFilter" 
+            placeholder="All Models" 
+            clearable
+            style="width: 150px"
+          >
+            <el-option label="All Models" value=""></el-option>
+            <el-option 
+              v-for="model in modelOptions" 
+              :key="model" 
+              :label="model" 
+              :value="model"
+            />
+          </el-select>
         </div>
         
-        <div class="filter-group">
+        <div class="filter-item">
           <span class="filter-label">Date Range:</span>
-          <input type="date" class="date-input date-input-sm" v-model="startDate">
-          <span class="to-label">to</span>
-          <input type="date" class="date-input date-input-sm" v-model="endDate">
+          <el-date-picker
+            v-model="dateRange"
+            type="daterange"
+            range-separator="to"
+            start-placeholder="Start date"
+            end-placeholder="End date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            style="width: 290px"
+          />
         </div>
         
-        <div class="filter-group">
+        <div class="filter-item">
           <span class="filter-label">Time:</span>
-          <select class="dropdown dropdown-sm">
-            <option value="hourly">Hourly</option>
-            <option value="daily" selected>Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-          </select>
+          <el-select 
+            v-model="timeGranularity" 
+            placeholder="Select"
+            style="width: 120px"
+          >
+            <el-option label="Hourly" value="hourly"></el-option>
+            <el-option label="Daily" value="daily"></el-option>
+            <el-option label="Weekly" value="weekly"></el-option>
+            <el-option label="Monthly" value="monthly"></el-option>
+          </el-select>
         </div>
         
         <div class="filter-buttons">
-          <button class="search-button">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-              <path d="M8.5 3a5.5 5.5 0 0 1 4.383 8.823l4.147 4.147a.75.75 0 0 1-1.06 1.06l-4.147-4.147A5.5 5.5 0 1 1 8.5 3Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="white"/>
-            </svg>
+          <el-button type="primary" @click="handleSearch">
+            <el-icon><search /></el-icon>
             Search
-          </button>
-          <button class="reset-button">Reset</button>
+          </el-button>
+          <el-button @click="handleReset" plain>Reset</el-button>
         </div>
       </div>
-    </div>
+    </el-card>
     
     <!-- Key Metrics -->
-    <div class="metrics-section">
-      <div class="metric-card">
-        <div class="metric-title">
-          Total Requests
-          <span class="tooltip-icon">
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
-            </svg>
-            <span class="tooltip-text">Total number of API calls to LLM services</span>
-          </span>
-        </div>
-        <div class="metric-value">1,234</div>
-        <div class="metric-change positive">↑12%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">
-          Input Tokens
-          <span class="tooltip-icon">
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
-            </svg>
-            <span class="tooltip-text">Total tokens sent to models as prompts</span>
-          </span>
-        </div>
-        <div class="metric-value">45.6K</div>
-        <div class="metric-change positive">↑8%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">
-          Output Tokens
-          <span class="tooltip-icon">
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
-            </svg>
-            <span class="tooltip-text">Total tokens generated by models as responses</span>
-          </span>
-        </div>
-        <div class="metric-value">78.9K</div>
-        <div class="metric-change positive">↑15%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">
-          Avg Response
-          <span class="tooltip-icon">
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
-            </svg>
-            <span class="tooltip-text">Average response time in milliseconds</span>
-          </span>
-        </div>
-        <div class="metric-value">235ms</div>
-        <div class="metric-change negative">↓5%</div>
-      </div>
-    </div>
+    <el-row :gutter="20" class="metrics-row">
+      <el-col :span="6">
+        <el-card class="metric-card" shadow="hover">
+          <div class="metric-header">
+            <span class="metric-title">Total Requests</span>
+            <el-tooltip content="Total number of API calls to LLM services" placement="top">
+              <el-icon><question-filled /></el-icon>
+            </el-tooltip>
+          </div>
+          <div class="metric-value">1,234</div>
+          <div class="metric-change positive">
+            <el-icon><top /></el-icon>
+            12%
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="metric-card" shadow="hover">
+          <div class="metric-header">
+            <span class="metric-title">Input Tokens</span>
+            <el-tooltip content="Total tokens sent to models as prompts" placement="top">
+              <el-icon><question-filled /></el-icon>
+            </el-tooltip>
+          </div>
+          <div class="metric-value">45.6K</div>
+          <div class="metric-change positive">
+            <el-icon><top /></el-icon>
+            8%
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="metric-card" shadow="hover">
+          <div class="metric-header">
+            <span class="metric-title">Output Tokens</span>
+            <el-tooltip content="Total tokens generated by models as responses" placement="top">
+              <el-icon><question-filled /></el-icon>
+            </el-tooltip>
+          </div>
+          <div class="metric-value">78.9K</div>
+          <div class="metric-change positive">
+            <el-icon><top /></el-icon>
+            15%
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="metric-card" shadow="hover">
+          <div class="metric-header">
+            <span class="metric-title">Avg Response</span>
+            <el-tooltip content="Average response time in milliseconds" placement="top">
+              <el-icon><question-filled /></el-icon>
+            </el-tooltip>
+          </div>
+          <div class="metric-value">235ms</div>
+          <div class="metric-change negative">
+            <el-icon><bottom /></el-icon>
+            5%
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
     
     <!-- Network-wide Model Usage Chart -->
-    <div class="chart-section">
-      <h3 class="chart-title">Network-wide Model Usage</h3>
-      <div class="chart-container" ref="networkModelUsageChart">
-        <!-- Chart will be rendered here -->
-      </div>
+    <el-card class="chart-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">Network-wide Model Usage</span>
+        </div>
+      </template>
+      <div class="chart-container" ref="networkModelUsageChart"></div>
       <div class="chart-legend">
         <div class="legend-item" v-for="(color, model) in modelColors" :key="model">
           <div class="legend-color" :style="{backgroundColor: color}"></div>
           <div class="legend-label">{{ model }}</div>
         </div>
       </div>
-    </div>
+    </el-card>
     
     <!-- Trend Charts Row -->
-    <div class="chart-row">
-      <div class="chart-column">
-        <h3 class="chart-title">LLM/VLM/Embedding Total Requests</h3>
-        <div class="chart-container" ref="totalRequestsChart">
-          <!-- Chart will be rendered here -->
-        </div>
-        <div class="chart-legend">
-          <div class="legend-item">
-            <div class="legend-line llm"></div>
-            <div class="legend-label">LLM</div>
+    <el-row :gutter="20" class="chart-row">
+      <el-col :span="12">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">LLM/VLM/Embedding Total Requests</span>
+            </div>
+          </template>
+          <div class="chart-container" ref="totalRequestsChart"></div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-line llm"></div>
+              <div class="legend-label">LLM</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-line vlm"></div>
+              <div class="legend-label">VLM</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-line embedding"></div>
+              <div class="legend-label">Embedding</div>
+            </div>
           </div>
-          <div class="legend-item">
-            <div class="legend-line vlm"></div>
-            <div class="legend-label">VLM</div>
-          </div>
-          <div class="legend-item">
-            <div class="legend-line embedding"></div>
-            <div class="legend-label">Embedding</div>
-          </div>
-        </div>
-      </div>
+        </el-card>
+      </el-col>
       
-      <div class="chart-column">
-        <h3 class="chart-title">LLM/VLM/Embedding Total Tokens</h3>
-        <div class="chart-container" ref="totalTokensChart">
-          <!-- Chart will be rendered here -->
-        </div>
-        <div class="chart-legend">
-          <div class="legend-item">
-            <div class="legend-line llm"></div>
-            <div class="legend-label">LLM</div>
+      <el-col :span="12">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">LLM/VLM/Embedding Total Tokens</span>
+            </div>
+          </template>
+          <div class="chart-container" ref="totalTokensChart"></div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-line llm"></div>
+              <div class="legend-label">LLM</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-line vlm"></div>
+              <div class="legend-label">VLM</div>
+            </div>
           </div>
-          <div class="legend-item">
-            <div class="legend-line vlm"></div>
-            <div class="legend-label">VLM</div>
-          </div>
-        </div>
-      </div>
-    </div>
+        </el-card>
+      </el-col>
+    </el-row>
     
-    <div class="chart-row">
-      <div class="chart-column">
-        <h3 class="chart-title">Image Models Total Requests</h3>
-        <div class="chart-container" ref="imageRequestsChart">
-          <!-- Chart will be rendered here -->
-        </div>
-        <div class="chart-legend">
-          <div class="legend-item">
-            <div class="legend-line dalle"></div>
-            <div class="legend-label">DALL-E</div>
+    <el-row :gutter="20" class="chart-row">
+      <el-col :span="12">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">Image Models Total Requests</span>
+            </div>
+          </template>
+          <div class="chart-container" ref="imageRequestsChart"></div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-line dalle"></div>
+              <div class="legend-label">DALL-E</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-line sd"></div>
+              <div class="legend-label">SD</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-line midjourney"></div>
+              <div class="legend-label">Midjourney</div>
+            </div>
           </div>
-          <div class="legend-item">
-            <div class="legend-line sd"></div>
-            <div class="legend-label">SD</div>
-          </div>
-          <div class="legend-item">
-            <div class="legend-line midjourney"></div>
-            <div class="legend-label">Midjourney</div>
-          </div>
-        </div>
-      </div>
+        </el-card>
+      </el-col>
       
-      <div class="chart-column">
-        <h3 class="chart-title">Model Distribution</h3>
-        <div class="chart-container" ref="modelDistributionChart">
-          <!-- Chart will be rendered here -->
-        </div>
-        <div class="pie-legend">
-          <div class="legend-item" v-for="(percentage, model) in modelDistribution" :key="model">
-            <div class="legend-label">{{ model }} {{ percentage }}%</div>
+      <el-col :span="12">
+        <el-card class="chart-card" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">Model Distribution</span>
+            </div>
+          </template>
+          <div class="chart-container" ref="modelDistributionChart"></div>
+          <div class="pie-legend">
+            <div class="legend-item" v-for="(percentage, model) in modelDistribution" :key="model">
+              <div class="legend-color" :style="{backgroundColor: getModelColor(model)}"></div>
+              <div class="legend-label">{{ model }} {{ percentage }}%</div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </el-card>
+      </el-col>
+    </el-row>
     
     <!-- User Usage Ranking -->
-    <div class="ranking-section">
-      <h3 class="section-title">User Usage Ranking</h3>
-      <table class="ranking-table">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Requests</th>
-            <th>Tokens</th>
-            <th>Avg Response</th>
-            <th>Models</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(user, index) in topUsers" :key="index">
-            <td>{{ user.email }}</td>
-            <td>{{ user.requests }}</td>
-            <td>{{ user.tokens }}</td>
-            <td>{{ user.avgResponse }}</td>
-            <td>{{ user.models }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="view-more">
-        <router-link to="/user-usage-details#user-usage-details" class="view-more-button">View More</router-link>
-      </div>
-    </div>
+    <el-card class="ranking-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">User Usage Ranking</span>
+          <el-button type="primary" link @click="viewMoreUserDetails">View More</el-button>
+        </div>
+      </template>
+      <el-table 
+        :data="topUsers" 
+        style="width: 100%" 
+        stripe 
+        :border="true"
+        highlight-current-row
+      >
+        <el-table-column prop="email" label="User" width="180"></el-table-column>
+        <el-table-column prop="successRequests" label="Success Requests">
+          <template #default="{ row }">
+            <span class="success-text">{{ row.successRequests }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="failedRequests" label="Failed Requests">
+          <template #default="{ row }">
+            <span class="failed-text">{{ row.failedRequests }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tokens" label="Tokens"></el-table-column>
+        <el-table-column prop="avgResponse" label="Avg Response"></el-table-column>
+        <el-table-column prop="models" label="Models"></el-table-column>
+      </el-table>
+    </el-card>
     
     <!-- Detailed Data Table -->
-    <div class="data-table-wrapper">
-      <h3 class="section-title">Detailed Data</h3>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>User ID/Email</th>
-            <th>Model Version</th>
-            <th>In-T</th>
-            <th>Out-T</th>
-            <th>Response</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(call, index) in recentCalls" :key="index">
-            <td>{{ call.timestamp }}</td>
-            <td>{{ call.user }}</td>
-            <td>{{ call.model }}</td>
-            <td>{{ call.inputTokens }}</td>
-            <td>{{ call.outputTokens }}</td>
-            <td>{{ call.response }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="pagination">
-        <div class="pagination-info">
-          Showing 1-5 / Total 247
+    <el-card class="data-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">Detailed Data</span>
         </div>
-        <div class="pagination-buttons">
-          <button class="pagination-button" disabled>
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4l-6 6 6 6" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          
-          <button class="pagination-button active">1</button>
-          <button class="pagination-button">2</button>
-          <button class="pagination-button">3</button>
-          <span>...</span>
-          <button class="pagination-button">10</button>
-          
-          <button class="pagination-button">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 4l6 6-6 6" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          
-          <select class="dropdown" style="margin-left: 10px; width: 100px;">
-            <option value="10">10/page</option>
-            <option value="20">20/page</option>
-            <option value="50">50/page</option>
-          </select>
-        </div>
+      </template>
+      <el-table 
+        :data="recentCalls" 
+        style="width: 100%" 
+        stripe 
+        :border="true"
+        highlight-current-row
+      >
+        <el-table-column prop="timestamp" label="Timestamp" width="120"></el-table-column>
+        <el-table-column prop="user" label="User ID/Email" width="180"></el-table-column>
+        <el-table-column prop="model" label="Model Version" width="120"></el-table-column>
+        <el-table-column prop="inputTokens" label="In-T"></el-table-column>
+        <el-table-column prop="outputTokens" label="Out-T"></el-table-column>
+        <el-table-column prop="response" label="Response"></el-table-column>
+      </el-table>
+      <div class="pagination-wrapper">
+        <el-pagination
+          v-model:currentPage="currentPage"
+          v-model:pageSize="pageSize"
+          :page-sizes="[5, 10, 20, 50]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="247"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
-    </div>
+    </el-card>
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, reactive, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import Chart from 'chart.js/auto';
 
 export default {
   name: 'Dashboard',
   setup() {
-    const startDate = ref('2023-01-01');
-    const endDate = ref('2023-01-31');
-    const userFilter = ref('');
-    const showUserDropdown = ref(false);
-
-    // User dropdown functions
-    const toggleUserDropdown = () => {
-      showUserDropdown.value = !showUserDropdown.value;
-    };
+    const router = useRouter();
     
-    const selectUser = (email) => {
-      userFilter.value = email;
-      showUserDropdown.value = false;
-    };
+    // 过滤条件
+    const userFilter = ref('');
+    const modelFilter = ref('');
+    const dateRange = ref([]);
+    const timeGranularity = ref('daily');
+    const currentPage = ref(1);
+    const pageSize = ref(10);
     
     // Chart references
     const networkModelUsageChart = ref(null);
@@ -371,6 +394,11 @@ export default {
       'Others': 8
     };
     
+    // 获取模型颜色的辅助函数
+    const getModelColor = (model) => {
+      return modelColors[model] || '#9CA3AF';
+    };
+    
     const uniqueUsers = [
       { email: 'user1@x.com' },
       { email: 'user2@x.com' },
@@ -380,16 +408,16 @@ export default {
     ];
     
     const topUsers = [
-      { email: 'user1@x.com', requests: '534', tokens: '120K', avgResponse: '220ms', models: 'Llama-3, Claude' },
-      { email: 'user2@x.com', requests: '423', tokens: '98K', avgResponse: '185ms', models: 'Mistral, GPT-4' },
-      { email: 'user3@x.com', requests: '287', tokens: '76K', avgResponse: '245ms', models: 'Llama-3' },
-      { email: 'user4@x.com', requests: '198', tokens: '54K', avgResponse: '195ms', models: 'Claude, DALL-E' },
-      { email: 'user5@x.com', requests: '156', tokens: '42K', avgResponse: '235ms', models: 'GPT-4, Mistral' },
-      { email: 'user6@x.com', requests: '145', tokens: '39K', avgResponse: '210ms', models: 'Llama-3' },
-      { email: 'user7@x.com', requests: '132', tokens: '35K', avgResponse: '200ms', models: 'Mistral' },
-      { email: 'user8@x.com', requests: '110', tokens: '31K', avgResponse: '255ms', models: 'Claude' },
-      { email: 'user9@x.com', requests: '98', tokens: '28K', avgResponse: '190ms', models: 'GPT-4' },
-      { email: 'user10@x.com', requests: '85', tokens: '25K', avgResponse: '225ms', models: 'DALL-E' }
+      { email: 'user1@x.com', successRequests: '534', failedRequests: '10', tokens: '120K', avgResponse: '220ms', models: 'Llama-3, Claude' },
+      { email: 'user2@x.com', successRequests: '423', failedRequests: '5', tokens: '98K', avgResponse: '185ms', models: 'Mistral, GPT-4' },
+      { email: 'user3@x.com', successRequests: '287', failedRequests: '15', tokens: '76K', avgResponse: '245ms', models: 'Llama-3' },
+      { email: 'user4@x.com', successRequests: '198', failedRequests: '8', tokens: '54K', avgResponse: '195ms', models: 'Claude, DALL-E' },
+      { email: 'user5@x.com', successRequests: '156', failedRequests: '3', tokens: '42K', avgResponse: '235ms', models: 'GPT-4, Mistral' },
+      { email: 'user6@x.com', successRequests: '145', failedRequests: '10', tokens: '39K', avgResponse: '210ms', models: 'Llama-3' },
+      { email: 'user7@x.com', successRequests: '132', failedRequests: '5', tokens: '35K', avgResponse: '200ms', models: 'Mistral' },
+      { email: 'user8@x.com', successRequests: '110', failedRequests: '10', tokens: '31K', avgResponse: '255ms', models: 'Claude' },
+      { email: 'user9@x.com', successRequests: '98', failedRequests: '2', tokens: '28K', avgResponse: '190ms', models: 'GPT-4' },
+      { email: 'user10@x.com', successRequests: '85', failedRequests: '5', tokens: '25K', avgResponse: '225ms', models: 'DALL-E' }
     ];
     
     const recentCalls = [
@@ -397,22 +425,42 @@ export default {
       { timestamp: '2023-01-30', user: 'user3@x.com', model: 'Mistral', inputTokens: '128', outputTokens: '346', response: '185ms' },
       { timestamp: '2023-01-30', user: 'user2@x.com', model: 'Llama-3', inputTokens: '512', outputTokens: '734', response: '245ms' },
       { timestamp: '2023-01-30', user: 'user5@x.com', model: 'Claude', inputTokens: '345', outputTokens: '678', response: '312ms' },
-      { timestamp: '2023-01-29', user: 'user4@x.com', model: 'Mistral', inputTokens: '256', outputTokens: '489', response: '205ms' },
-      { timestamp: '2023-01-29', user: 'user6@x.com', model: 'GPT-4', inputTokens: '1024', outputTokens: '2048', response: '350ms' },
-      { timestamp: '2023-01-29', user: 'user7@x.com', model: 'DALL-E', inputTokens: '50', outputTokens: '0', response: '500ms' },
-      { timestamp: '2023-01-28', user: 'user1@x.com', model: 'Claude', inputTokens: '400', outputTokens: '800', response: '280ms' },
-      { timestamp: '2023-01-28', user: 'user8@x.com', model: 'Llama-3', inputTokens: '300', outputTokens: '600', response: '220ms' },
-      { timestamp: '2023-01-27', user: 'user9@x.com', model: 'Mistral', inputTokens: '200', outputTokens: '400', response: '190ms' }
+      { timestamp: '2023-01-29', user: 'user4@x.com', model: 'Mistral', inputTokens: '256', outputTokens: '489', response: '205ms' }
     ];
+    
+    // Methods
+    const handleSearch = () => {
+      console.log('搜索条件:', {
+        user: userFilter.value,
+        model: modelFilter.value,
+        dateRange: dateRange.value,
+        timeGranularity: timeGranularity.value
+      });
+    };
+    
+    const handleReset = () => {
+      userFilter.value = '';
+      modelFilter.value = '';
+      dateRange.value = [];
+      timeGranularity.value = 'daily';
+    };
+    
+    const handleSizeChange = (size) => {
+      pageSize.value = size;
+    };
+    
+    const handleCurrentChange = (page) => {
+      currentPage.value = page;
+    };
+    
+    const viewMoreUserDetails = () => {
+      router.push('/user-usage-details');
+    };
     
     // Initialize charts on component mount
     onMounted(() => {
-      document.addEventListener('click', (event) => {
-        const userFilterElement = document.querySelector('.user-filter');
-        if (userFilterElement && !userFilterElement.contains(event.target)) {
-          showUserDropdown.value = false;
-        }
-      });
+      // 设置初始日期
+      dateRange.value = ['2023-01-01', '2023-01-31'];
       
       // 确保DOM元素已经加载完成
       setTimeout(() => {
@@ -707,19 +755,22 @@ export default {
             console.error("Model Distribution 图表元素不存在");
           }
           
-        } catch (error) {
-          console.error("图表初始化错误:", error);
+        } catch (e) {
+          console.error("图表初始化出错:", e);
         }
-      }, 500); // 延迟500毫秒确保DOM已经渲染
+      }, 500);
     });
     
     return {
-      startDate,
-      endDate,
+      userFilter,
+      modelFilter,
+      dateRange,
+      timeGranularity,
+      uniqueUsers,
       modelOptions,
       modelColors,
       modelDistribution,
-      uniqueUsers,
+      getModelColor,
       topUsers,
       recentCalls,
       networkModelUsageChart,
@@ -727,267 +778,161 @@ export default {
       totalTokensChart,
       imageRequestsChart,
       modelDistributionChart,
-      timeLabels,
-      userFilter,
-      showUserDropdown,
-      toggleUserDropdown,
-      selectUser
+      currentPage,
+      pageSize,
+      handleSearch,
+      handleReset,
+      handleSizeChange,
+      handleCurrentChange,
+      viewMoreUserDetails
     };
   }
 };
 </script>
 
 <style scoped>
-.filter-section {
-  padding: 18px 20px;
-  background-color: white;
-  border-bottom: 1px solid #eee;
-}
-
-.filter-row {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 20px;
-}
-
-.filter-group {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.filter-label {
-  font-weight: 500;
-  margin-right: 10px;
-  color: #333;
-  font-size: 14px;
-}
-
-.to-label {
-  margin: 0 8px;
-  font-size: 14px;
-}
-
-.date-input {
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 150px;
-  font-size: 14px;
-}
-
-.dropdown {
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  min-width: 120px;
-  font-size: 14px;
-}
-
-.radio-group {
-  display: flex;
-  align-items: center;
-}
-
-.radio-label {
-  margin-right: 10px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.radio-label input {
-  margin-right: 5px;
-}
-
-.filter-buttons {
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-}
-
-.search-button {
-  padding: 8px 14px;
-  background-color: #3490dc;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-}
-
-.reset-button {
-  padding: 8px 14px;
-  background-color: #e2e8f0;
-  color: #333;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+.main-content {
+  padding: 20px;
+  background-color: #f5f7fa;
 }
 
 .navbar {
-  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #eee;
-  background-color: white;
+  margin-bottom: 20px;
+  height: 70px;
+  border-bottom: 1px solid #ebeef5;
+  padding: 0 0 20px 0;
 }
 
 .navbar h1 {
   font-size: 24px;
   font-weight: 600;
-  color: #1e293b;
-  margin: 0;
+  color: #303133;
 }
 
-.admin-dropdown {
+.el-dropdown-link {
+  cursor: pointer;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  font-weight: 500;
-  font-size: 15px;
-  cursor: pointer;
 }
 
-.metrics-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+.filter-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  padding: 8px 0;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
   gap: 20px;
-  padding: 24px;
-  background-color: white;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 14px;
+  color: #606266;
+  font-weight: 500;
+}
+
+.filter-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.button-group {
+  margin-left: auto;
+}
+
+.metrics-row {
+  margin-bottom: 20px;
 }
 
 .metric-card {
-  background-color: #f8fafc;
+  height: 140px;
   border-radius: 8px;
-  padding: 22px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  position: relative;
+  transition: all 0.3s;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .metric-title {
-  font-size: 15px;
-  color: #64748b;
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-}
-
-.tooltip-icon {
-  position: relative;
-  margin-left: 5px;
-  cursor: help;
-  display: inline-flex;
-}
-
-.tooltip-text {
-  visibility: hidden;
-  position: absolute;
-  z-index: 100;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #1e293b;
-  color: white;
-  text-align: center;
-  border-radius: 4px;
-  padding: 6px 10px;
-  width: 200px;
-  font-size: 12px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  white-space: normal;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.tooltip-text::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #1e293b transparent transparent transparent;
-}
-
-.tooltip-icon:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
+  font-size: 16px;
+  font-weight: 500;
+  margin-right: 5px;
+  color: #606266;
 }
 
 .metric-value {
   font-size: 28px;
   font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 6px;
+  margin: 10px 0;
+  color: #303133;
 }
 
 .metric-change {
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.metric-change.positive {
-  color: #10b981;
+.positive {
+  color: #34D399;
 }
 
-.metric-change.negative {
-  color: #ef4444;
+.negative {
+  color: #F56C6C;
 }
 
-.chart-section {
-  background-color: white;
-  padding: 20px;
-  margin: 20px;
+.chart-card {
+  margin-bottom: 20px;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  min-height: 400px;
 }
 
-.chart-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin: 0 20px;
-  min-height: 400px;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.chart-column {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  min-height: 400px;
-}
-
-.chart-title {
-  font-size: 18px;
+.card-title {
+  font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 15px;
+  color: #303133;
 }
 
 .chart-container {
   height: 300px;
-  position: relative;
-  width: 100%;
-  min-height: 300px;
-  border: 1px solid #eee;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  padding: 10px;
 }
 
 .chart-legend {
   display: flex;
-  flex-wrap: wrap;
-  margin-top: 15px;
   justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+  flex-wrap: wrap;
 }
 
 .legend-item {
@@ -997,17 +942,20 @@ export default {
   margin-bottom: 5px;
 }
 
-.legend-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  margin-right: 5px;
+.legend-color, .legend-line {
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
+  border-radius: 3px;
 }
 
 .legend-line {
-  width: 20px;
-  height: 3px;
-  margin-right: 5px;
+  height: 4px;
+}
+
+.legend-label {
+  font-size: 14px;
+  color: #606266;
 }
 
 .legend-line.llm {
@@ -1015,7 +963,7 @@ export default {
 }
 
 .legend-line.vlm {
-  background-color: #34D399;
+  background-color: #10B981;
 }
 
 .legend-line.embedding {
@@ -1031,198 +979,49 @@ export default {
 }
 
 .legend-line.midjourney {
-  background-color: #10B981;
-}
-
-.legend-label {
-  font-size: 14px;
-  color: #64748b;
+  background-color: #3B82F6;
 }
 
 .pie-legend {
-  margin-top: 15px;
   display: flex;
-  justify-content: space-around;
-}
-
-.ranking-section {
-  background-color: white;
-  padding: 20px;
-  margin: 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 18px;
-}
-
-.ranking-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.ranking-table th {
-  background-color: #f8fafc;
-  padding: 14px;
-  text-align: left;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 500;
-  color: #64748b;
-  font-size: 15px;
-}
-
-.ranking-table td {
-  padding: 14px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #334155;
-  font-size: 14px;
-}
-
-.view-more {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.view-more-button {
-  display: inline-block;
-  padding: 10px 18px;
-  background-color: #3490dc;
-  color: white;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.data-table-wrapper {
-  padding: 20px;
-  background-color: white;
-  margin: 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table th {
-  background-color: #f8fafc;
-  padding: 14px;
-  text-align: left;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 500;
-  color: #64748b;
-  font-size: 15px;
-}
-
-.data-table td {
-  padding: 14px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #334155;
-  font-size: 14px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.pagination-info {
-  color: #64748b;
-  font-size: 14px;
-}
-
-.pagination-buttons {
-  display: flex;
-  align-items: center;
-}
-
-.pagination-button {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  border: 1px solid #e2e8f0;
-  background-color: white;
-  margin: 0 3px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+  gap: 15px;
+  margin-top: 15px;
+  flex-wrap: wrap;
 }
 
-.pagination-button.active {
-  background-color: #3490dc;
-  color: white;
-  border-color: #3490dc;
+.ranking-card, .data-card {
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
-.pagination-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.pagination-wrapper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 
-.dropdown-sm {
-  min-width: 120px;
-  width: auto;
+:deep(.el-table th) {
+  background-color: #f5f7fa;
+  font-weight: 600;
+  color: #606266;
 }
 
-.date-input-sm {
-  width: 130px;
+:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+  background-color: #409EFF;
 }
 
-/* 添加User筛选器的样式 */
-.user-filter {
-  position: relative;
-  min-width: 200px;
+:deep(.el-card__body) {
+  padding: 15px 20px;
 }
 
-.user-input {
-  padding: 8px 30px 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  font-size: 14px;
+.success-text {
+  color: #67C23A;
+  font-weight: 500;
 }
 
-.dropdown-icon {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-}
-
-.user-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 2px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.dropdown-item {
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.dropdown-item:hover {
-  background-color: #f3f4f6;
+.failed-text {
+  color: #F56C6C;
+  font-weight: 500;
 }
 </style> 
