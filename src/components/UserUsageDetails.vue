@@ -15,44 +15,6 @@
       </div>
     </div>
     
-    <!-- Filter Area -->
-    <div class="filter-section">
-      <div class="filter-row">
-        <div class="filter-group">
-          <span class="filter-label">User:</span>
-          <select class="dropdown">
-            <option value="">All Users</option>
-            <option v-for="user in uniqueUsers" :key="user.email" :value="user.email">{{ user.email }}</option>
-          </select>
-        </div>
-        
-        <div class="filter-group">
-          <span class="filter-label">Model:</span>
-          <select class="dropdown">
-            <option value="">All Models</option>
-            <option v-for="model in modelOptions" :key="model" :value="model">{{ model }}</option>
-          </select>
-        </div>
-        
-        <div class="filter-group">
-          <span class="filter-label">Date Range:</span>
-          <input type="date" class="date-input" v-model="startDate">
-          <span class="to-label">to</span>
-          <input type="date" class="date-input" v-model="endDate">
-        </div>
-        
-        <div class="filter-buttons">
-          <button class="search-button">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-              <path d="M8.5 3a5.5 5.5 0 0 1 4.383 8.823l4.147 4.147a.75.75 0 0 1-1.06 1.06l-4.147-4.147A5.5 5.5 0 1 1 8.5 3Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="white"/>
-            </svg>
-            Search
-          </button>
-          <button class="reset-button">Reset</button>
-        </div>
-      </div>
-    </div>
-    
     <!-- User Stats Summary -->
     <div class="metrics-section">
       <div class="metric-card">
@@ -74,6 +36,74 @@
         <div class="metric-title">Avg Daily Requests</div>
         <div class="metric-value">789</div>
         <div class="metric-change positive">↑12%</div>
+      </div>
+    </div>
+    
+    <!-- Filter Area -->
+    <div class="filter-section">
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-label">User:</span>
+          <div class="user-filter">
+            <input 
+              type="text" 
+              class="user-input" 
+              placeholder="Enter user ID or email" 
+              v-model="userFilter"
+            />
+            <div class="dropdown-icon" @click="toggleUserDropdown">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="m6 8 4 4 4-4" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="user-dropdown" v-if="showUserDropdown">
+              <div class="dropdown-item" @click="selectUser('')">All Users</div>
+              <div 
+                class="dropdown-item" 
+                v-for="user in uniqueUsers" 
+                :key="user.email" 
+                @click="selectUser(user.email)"
+              >
+                {{ user.email }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <span class="filter-label">Model:</span>
+          <select class="dropdown">
+            <option value="">All Models</option>
+            <option v-for="model in modelOptions" :key="model" :value="model">{{ model }}</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <span class="filter-label">Date Range:</span>
+          <div class="date-input-wrapper">
+            <input type="date" class="date-input" v-model="startDate">
+            <svg class="date-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 5V3m8 2V3m-9 4h10M5 7v8a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <span class="to-label">to</span>
+          <div class="date-input-wrapper">
+            <input type="date" class="date-input" v-model="endDate">
+            <svg class="date-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 5V3m8 2V3m-9 4h10M5 7v8a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="#6b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="filter-buttons">
+          <button class="search-button">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+              <path d="M8.5 3a5.5 5.5 0 0 1 4.383 8.823l4.147 4.147a.75.75 0 0 1-1.06 1.06l-4.147-4.147A5.5 5.5 0 1 1 8.5 3Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="white"/>
+            </svg>
+            Search
+          </button>
+          <button class="reset-button">Reset</button>
+        </div>
       </div>
     </div>
     
@@ -177,6 +207,18 @@ export default {
   setup() {
     const startDate = ref('2023-01-01');
     const endDate = ref('2023-01-31');
+    const userFilter = ref('');
+    const showUserDropdown = ref(false);
+    
+    // User dropdown functions
+    const toggleUserDropdown = () => {
+      showUserDropdown.value = !showUserDropdown.value;
+    };
+    
+    const selectUser = (email) => {
+      userFilter.value = email;
+      showUserDropdown.value = false;
+    };
     
     // Chart references
     const activeUsersChart = ref(null);
@@ -230,6 +272,14 @@ export default {
     onMounted(() => {
       // 确保页面滚动到顶部
       window.scrollTo(0, 0);
+      
+      // 添加点击外部关闭下拉菜单的事件监听
+      document.addEventListener('click', (event) => {
+        const userFilterElement = document.querySelector('.user-filter');
+        if (userFilterElement && !userFilterElement.contains(event.target)) {
+          showUserDropdown.value = false;
+        }
+      });
       
       // Daily Active Users Chart
       const activeUsersCtx = activeUsersChart.value.getContext('2d');
@@ -383,7 +433,11 @@ export default {
       activeUsersChart,
       topUsersChart,
       modelPopularityChart,
-      hourlyUsageChart
+      hourlyUsageChart,
+      userFilter,
+      showUserDropdown,
+      toggleUserDropdown,
+      selectUser
     };
   }
 };
@@ -394,6 +448,7 @@ export default {
   padding: 20px;
   background-color: white;
   border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
 }
 
 .navbar h1 {
@@ -424,30 +479,63 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: 15px;
 }
 
 .filter-group {
   display: flex;
   align-items: center;
-  margin-right: 20px;
-  margin-bottom: 10px;
+  margin-right: 0;
+  margin-bottom: 0;
 }
 
 .filter-label {
   font-weight: 500;
-  margin-right: 8px;
+  margin-right: 12px;
   color: #333;
+  font-size: 16px;
 }
 
 .to-label {
-  margin: 0 8px;
+  margin: 0 10px;
+  font-size: 16px;
 }
 
 .date-input {
-  padding: 8px;
+  padding: 10px 35px 10px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 150px;
+  font-size: 14px;
+  appearance: none;
+  background-color: white;
+}
+
+.date-input-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.date-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.dropdown {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 150px;
+  font-size: 14px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  padding-right: 35px;
 }
 
 .filter-buttons {
@@ -457,7 +545,7 @@ export default {
 }
 
 .search-button {
-  padding: 8px 16px;
+  padding: 10px 20px;
   background-color: #3490dc;
   color: white;
   border: none;
@@ -465,48 +553,63 @@ export default {
   cursor: pointer;
   display: flex;
   align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.search-button:hover {
+  background-color: #2779bd;
 }
 
 .reset-button {
-  padding: 8px 16px;
-  background-color: #e2e8f0;
+  padding: 10px 20px;
+  background-color: #f1f5f9;
   color: #333;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.reset-button:hover {
+  background-color: #e2e8f0;
 }
 
 .metrics-section {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
   padding: 20px;
-  background-color: white;
+  background-color: #f9fafb;
 }
 
 .metric-card {
-  background-color: #f8fafc;
+  background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .metric-title {
-  font-size: 14px;
+  font-size: 16px;
   color: #64748b;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .metric-value {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
   color: #1e293b;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .metric-change {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
+  color: #10b981;
 }
 
 .metric-change.positive {
@@ -613,5 +716,51 @@ export default {
 .chart-container {
   height: 300px;
   position: relative;
+}
+
+.user-filter {
+  position: relative;
+  min-width: 200px;
+}
+
+.user-input {
+  padding: 10px 35px 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-item:hover {
+  background-color: #f3f4f6;
 }
 </style> 
