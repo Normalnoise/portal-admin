@@ -28,9 +28,28 @@
         <div class="metric-change positive">↑8%</div>
       </div>
       <div class="metric-card">
-        <div class="metric-title">Total Requests</div>
-        <div class="metric-value">23,541</div>
-        <div class="metric-change positive">↑15%</div>
+        <div class="metric-title-center">
+          Requests
+          <span class="tooltip-icon">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+            </svg>
+            <span class="tooltip-text">Total number of API calls to LLM services</span>
+          </span>
+        </div>
+        <div class="requests-row">
+          <div class="requests-column">
+            <div class="metric-big-value success-text">21,856</div>
+            <div class="metric-status">Success</div>
+            <div class="metric-change positive">↑13%</div>
+          </div>
+          <div class="requests-divider"></div>
+          <div class="requests-column">
+            <div class="metric-big-value failed-text">1,685</div>
+            <div class="metric-status">Failed</div>
+            <div class="metric-change negative">↑7%</div>
+          </div>
+        </div>
       </div>
       <div class="metric-card">
         <div class="metric-title">Avg Daily Requests</div>
@@ -112,18 +131,66 @@
       <table class="user-table">
         <thead>
           <tr>
-            <th>User</th>
-            <th>Total Requests</th>
-            <th>Total Tokens</th>
-            <th>Most Used Models</th>
-            <th>Last Activity</th>
+            <th>
+              User
+              <span class="table-tooltip" title="User email address">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Requests(success|failed)
+              <span class="table-tooltip" title="Number of successful and failed API requests">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Total Tokens
+              <span class="table-tooltip" title="Total token usage">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Images
+              <span class="table-tooltip" title="Number of generated images">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Most Used Models
+              <span class="table-tooltip" title="Most frequently used AI models">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Last Activity
+              <span class="table-tooltip" title="Date of last user activity">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(user, index) in userList" :key="index">
             <td>{{ user.email }}</td>
-            <td>{{ user.requests }}</td>
+            <td class="requests-simple">
+              <span class="success-count">{{ user.successRequests }}</span>
+              <span class="separator">|</span>
+              <span class="failed-count">{{ user.failedRequests }}</span>
+            </td>
             <td>{{ user.tokens }}</td>
+            <td>{{ user.images }}</td>
             <td>{{ user.models }}</td>
             <td>{{ user.lastActivity }}</td>
           </tr>
@@ -155,6 +222,123 @@
           <select class="dropdown" style="margin-left: 10px; width: 100px;">
             <option value="15">15/page</option>
             <option value="30">30/page</option>
+            <option value="50">50/page</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Request Details Table -->
+    <div class="data-table-wrapper">
+      <h3 class="section-title">Request Details</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>
+              Timestamp
+              <span class="table-tooltip" title="Date and time of the request">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              User
+              <span class="table-tooltip" title="User email address">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Model
+              <span class="table-tooltip" title="AI model used for the request">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Status
+              <span class="table-tooltip" title="Request success or failure status">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              In-T
+              <span class="table-tooltip" title="Input tokens used">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Out-T
+              <span class="table-tooltip" title="Output tokens generated">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Images
+              <span class="table-tooltip" title="Number of images generated">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+            <th>
+              Response
+              <span class="table-tooltip" title="Response time in milliseconds">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-9a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm0-4a1 1 0 100 2 1 1 0 000-2z" fill="#64748b"/>
+                </svg>
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(call, index) in recentCalls" :key="index">
+            <td>{{ call.timestamp }}</td>
+            <td>{{ call.user }}</td>
+            <td>{{ call.model }}</td>
+            <td :class="call.status === 'Success' ? 'success-text' : 'failed-text'">{{ call.status }}</td>
+            <td>{{ call.inputTokens }}</td>
+            <td>{{ call.outputTokens }}</td>
+            <td>{{ call.images }}</td>
+            <td>{{ call.response }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <div class="pagination-info">
+          Showing 1-10 / Total 152
+        </div>
+        <div class="pagination-buttons">
+          <button class="pagination-button" disabled>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4l-6 6 6 6" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <button class="pagination-button active">1</button>
+          <button class="pagination-button">2</button>
+          <button class="pagination-button">3</button>
+          <span>...</span>
+          <button class="pagination-button">10</button>
+          
+          <button class="pagination-button">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 4l6 6-6 6" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <select class="dropdown" style="margin-left: 10px; width: 100px;">
+            <option value="10">10/page</option>
+            <option value="20">20/page</option>
             <option value="50">50/page</option>
           </select>
         </div>
@@ -251,21 +435,35 @@ export default {
     ];
     
     const userList = [
-      { email: 'user1@x.com', requests: '534', tokens: '120K', models: 'Llama-3, Claude', lastActivity: '2023-01-30' },
-      { email: 'user2@x.com', requests: '423', tokens: '98K', models: 'Mistral, GPT-4', lastActivity: '2023-01-30' },
-      { email: 'user3@x.com', requests: '287', tokens: '76K', models: 'Llama-3', lastActivity: '2023-01-29' },
-      { email: 'user4@x.com', requests: '198', tokens: '54K', models: 'Claude, DALL-E', lastActivity: '2023-01-28' },
-      { email: 'user5@x.com', requests: '156', tokens: '42K', models: 'GPT-4, Mistral', lastActivity: '2023-01-30' },
-      { email: 'user6@x.com', requests: '143', tokens: '38K', models: 'GPT-4', lastActivity: '2023-01-29' },
-      { email: 'user7@x.com', requests: '128', tokens: '31K', models: 'Llama-3', lastActivity: '2023-01-27' },
-      { email: 'user8@x.com', requests: '117', tokens: '28K', models: 'Mistral, DALL-E', lastActivity: '2023-01-29' },
-      { email: 'user9@x.com', requests: '95', tokens: '22K', models: 'Claude', lastActivity: '2023-01-28' },
-      { email: 'user10@x.com', requests: '82', tokens: '19K', models: 'GPT-4, Llama-3', lastActivity: '2023-01-26' },
-      { email: 'user11@x.com', requests: '78', tokens: '18K', models: 'Mistral', lastActivity: '2023-01-30' },
-      { email: 'user12@x.com', requests: '65', tokens: '15K', models: 'Llama-3', lastActivity: '2023-01-29' },
-      { email: 'user13@x.com', requests: '59', tokens: '14K', models: 'DALL-E', lastActivity: '2023-01-28' },
-      { email: 'user14@x.com', requests: '54', tokens: '13K', models: 'Mistral', lastActivity: '2023-01-27' },
-      { email: 'user15@x.com', requests: '48', tokens: '11K', models: 'GPT-4', lastActivity: '2023-01-29' }
+      { email: 'user1@x.com', successRequests: '498', failedRequests: '36', tokens: '120K', images: '15', models: 'Llama-3, Claude', lastActivity: '2023-01-30' },
+      { email: 'user2@x.com', successRequests: '401', failedRequests: '22', tokens: '98K', images: '8', models: 'Mistral, GPT-4', lastActivity: '2023-01-30' },
+      { email: 'user3@x.com', successRequests: '264', failedRequests: '23', tokens: '76K', images: '0', models: 'Llama-3', lastActivity: '2023-01-29' },
+      { email: 'user4@x.com', successRequests: '182', failedRequests: '16', tokens: '54K', images: '21', models: 'Claude, DALL-E', lastActivity: '2023-01-28' },
+      { email: 'user5@x.com', successRequests: '147', failedRequests: '9', tokens: '42K', images: '5', models: 'GPT-4, Mistral', lastActivity: '2023-01-30' },
+      { email: 'user6@x.com', successRequests: '130', failedRequests: '13', tokens: '38K', images: '0', models: 'GPT-4', lastActivity: '2023-01-29' },
+      { email: 'user7@x.com', successRequests: '115', failedRequests: '13', tokens: '31K', images: '2', models: 'Llama-3', lastActivity: '2023-01-27' },
+      { email: 'user8@x.com', successRequests: '109', failedRequests: '8', tokens: '28K', images: '0', models: 'Mistral, DALL-E', lastActivity: '2023-01-29' },
+      { email: 'user9@x.com', successRequests: '86', failedRequests: '9', tokens: '22K', images: '4', models: 'Claude', lastActivity: '2023-01-28' },
+      { email: 'user10@x.com', successRequests: '76', failedRequests: '6', tokens: '19K', images: '12', models: 'GPT-4, Llama-3', lastActivity: '2023-01-26' },
+      { email: 'user11@x.com', successRequests: '72', failedRequests: '6', tokens: '18K', images: '0', models: 'Mistral', lastActivity: '2023-01-30' },
+      { email: 'user12@x.com', successRequests: '62', failedRequests: '3', tokens: '15K', images: '0', models: 'Llama-3', lastActivity: '2023-01-29' },
+      { email: 'user13@x.com', successRequests: '53', failedRequests: '6', tokens: '14K', images: '3', models: 'DALL-E', lastActivity: '2023-01-28' },
+      { email: 'user14@x.com', successRequests: '49', failedRequests: '5', tokens: '13K', images: '1', models: 'Mistral', lastActivity: '2023-01-27' },
+      { email: 'user15@x.com', successRequests: '45', failedRequests: '3', tokens: '11K', images: '0', models: 'GPT-4', lastActivity: '2023-01-29' }
+    ];
+    
+    // Sample data for recent calls
+    const recentCalls = [
+      { timestamp: '2023-01-30 14:25:36', user: 'user1@x.com', model: 'Llama-3', status: 'Success', inputTokens: '256', outputTokens: '512', images: '0', response: '210ms' },
+      { timestamp: '2023-01-30 12:18:45', user: 'user3@x.com', model: 'Mistral', status: 'Success', inputTokens: '128', outputTokens: '346', images: '0', response: '185ms' },
+      { timestamp: '2023-01-30 11:02:19', user: 'user2@x.com', model: 'Llama-3', status: 'Failed', inputTokens: '512', outputTokens: '0', images: '0', response: '245ms' },
+      { timestamp: '2023-01-30 10:45:30', user: 'user5@x.com', model: 'Claude', status: 'Success', inputTokens: '345', outputTokens: '678', images: '0', response: '312ms' },
+      { timestamp: '2023-01-29 23:15:11', user: 'user4@x.com', model: 'Mistral', status: 'Success', inputTokens: '256', outputTokens: '489', images: '0', response: '205ms' },
+      { timestamp: '2023-01-29 20:32:51', user: 'user6@x.com', model: 'GPT-4', status: 'Success', inputTokens: '1024', outputTokens: '2048', images: '0', response: '350ms' },
+      { timestamp: '2023-01-29 18:42:07', user: 'user7@x.com', model: 'DALL-E', status: 'Failed', inputTokens: '50', outputTokens: '0', images: '1', response: '500ms' },
+      { timestamp: '2023-01-28 16:20:33', user: 'user1@x.com', model: 'Claude', status: 'Success', inputTokens: '400', outputTokens: '800', images: '0', response: '280ms' },
+      { timestamp: '2023-01-28 15:10:26', user: 'user8@x.com', model: 'Llama-3', status: 'Success', inputTokens: '300', outputTokens: '600', images: '0', response: '220ms' },
+      { timestamp: '2023-01-27 09:55:14', user: 'user9@x.com', model: 'Mistral', status: 'Success', inputTokens: '200', outputTokens: '400', images: '0', response: '190ms' }
     ];
     
     // Initialize charts on component mount
@@ -437,7 +635,8 @@ export default {
       userFilter,
       showUserDropdown,
       toggleUserDropdown,
-      selectUser
+      selectUser,
+      recentCalls
     };
   }
 };
@@ -762,5 +961,241 @@ export default {
 
 .dropdown-item:hover {
   background-color: #f3f4f6;
+}
+
+.success-text {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.failed-text {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.requests-display {
+  display: flex;
+  align-items: center;
+}
+
+.request-separator {
+  width: 1px;
+  height: 20px;
+  background-color: #e2e8f0;
+  margin: 0 10px;
+}
+
+.request-label {
+  font-size: 12px;
+  color: #64748b;
+  margin-left: 4px;
+}
+
+.metric-title-center {
+  font-size: 16px;
+  color: #64748b;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.requests-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+
+.requests-column {
+  flex: 1;
+  text-align: center;
+}
+
+.requests-divider {
+  width: 1px;
+  height: 80px;
+  background-color: #e2e8f0;
+  margin: 0 10px;
+}
+
+.metric-big-value {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.metric-status {
+  font-size: 16px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.tooltip-icon {
+  position: relative;
+  margin-left: 5px;
+  cursor: help;
+  display: inline-flex;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  z-index: 100;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1e293b;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  padding: 6px 10px;
+  width: 200px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: normal;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1e293b transparent transparent transparent;
+}
+
+.tooltip-icon:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.requests-cell {
+  display: flex;
+  align-items: center;
+  padding: 0 10px !important;
+}
+
+.success-count {
+  color: #10b981;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.failed-count {
+  color: #ef4444;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.request-type {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: normal;
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.request-divider {
+  width: 1px;
+  height: 20px;
+  background-color: #e2e8f0;
+  margin: 0 15px;
+}
+
+.requests-simple {
+  white-space: nowrap;
+}
+
+.separator {
+  margin: 0 4px;
+  color: #6b7280;
+  font-weight: normal;
+}
+
+.table-tooltip {
+  position: relative;
+  display: inline-flex;
+  margin-left: 4px;
+  cursor: help;
+  vertical-align: middle;
+}
+
+.table-tooltip:hover::after {
+  content: attr(title);
+  position: absolute;
+  z-index: 100;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1e293b;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  padding: 4px 8px;
+  width: max-content;
+  max-width: 200px;
+  font-size: 12px;
+  font-weight: normal;
+  opacity: 1;
+  pointer-events: none;
+  white-space: normal;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.table-tooltip:hover::before {
+  content: "";
+  position: absolute;
+  z-index: 100;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1e293b transparent transparent transparent;
+  margin-bottom: -5px;
+  pointer-events: none;
+}
+
+.data-table-wrapper {
+  padding: 20px;
+  background-color: white;
+  margin: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 18px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background-color: #f8fafc;
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 500;
+  color: #64748b;
+  font-size: 15px;
+}
+
+.data-table td {
+  padding: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 14px;
 }
 </style> 
